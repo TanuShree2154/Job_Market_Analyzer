@@ -1,6 +1,8 @@
 import streamlit as st
 import pandas as pd
 import pyodbc 
+from streamlit_searchbox import st_searchbox
+
 st.set_page_config(layout="wide")
 conn = pyodbc.connect(
     "Driver={ODBC Driver 17 for SQL Server};"
@@ -8,29 +10,37 @@ conn = pyodbc.connect(
     "Database=JobMarketAnalyzer;"
     "Trusted_Connection=yes;"
 )
-
-st.title("Job Market Analyzer")
-
+st.title("JOB MARKET ANALYZER")
 #sidebar
 st.sidebar.title("Filters")
+st.sidebar.subheader("Search")
+#company name serch input
+comp_name=st.sidebar.text_input("Search Company " , key='comp_name')
+job_title= st.sidebar.text_input("Search Job Title", key='job_title')
+st.sidebar.divider()
 # Location filter
+st.sidebar.subheader("Location Settings")
 location = st.sidebar.selectbox(
     "Select Location",
-    ["All", "Bangalore", "Pune", "Delhi", "Hyderabad", "Mumbai"]
+    ["All", "Bangalore", "Pune", "Delhi", "Hyderabad", "Mumbai"],
+    key='location'
 )
-
+st.sidebar.divider()
 # Experience filter
+st.sidebar.subheader("Job Settings")
 experience = st.sidebar.selectbox(
     "Select Experience Level",
-    ["All", "Fresher", "1-3 Years", "3-5 Years"]
+    ["All", "Fresher", "1-3 Years", "3-5 Years"],
+    key='experience'
 )
 
 # Job type filter
 job_type = st.sidebar.selectbox(
     "Select Job Type",
-    ["All", "Full Time", "Internship", "Contract", "Hybrid"]
+    ["All", "Full Time", "Internship", "Contract", "Hybrid"],
+    key='job_type'
 )
-
+st.sidebar.divider()
 #dynamic query
 query = f"SELECT * FROM jobs WHERE 1=1"
 if location != "All":
@@ -39,23 +49,34 @@ if experience!="All":
     query += f" AND experience_level ='{experience}'"
 if job_type!= "All":
     query+= f" AND job_type ='{job_type}'"
-
-
+if comp_name not in [None, "", "nan"]:
+    query += f" AND company LIKE '%{comp_name}%'"
+if job_title not in [None, "", "nan"]:
+    query += f" AND job_title LIKE '%{job_title}%'"
+    
 #filtered data table
 temp_df = pd.read_sql(query, conn)                  #filterd data
-
+if temp_df.empty:
+    st.warning("No jobs found.")
+    st.stop()
 
 #Salary sidebar silder
 min_salary= temp_df['salary_lpa'].min()
 max_salary = temp_df['salary_lpa'].max()
+
+
 selected_salary=st.sidebar.slider(
     'Select Salary (lpa)',
     min_salary,
     max_salary,
-    min_salary
+    min_salary,
+    key='salary'
 )
 query += f" AND salary_lpa >= {selected_salary}"
 df = pd.read_sql(query, conn)
+st.sidebar.divider()
+
+    
 
 #Sidebar Summary
 st.sidebar.markdown("---")
@@ -64,6 +85,43 @@ st.sidebar.write(f"Total Jobs: {len(df)}")
 st.sidebar.write(f"Total Companies: {df['company'].nunique()}")
 st.sidebar.write(f"Total Location: {df['location'].nunique()}")
 
+# skills by job
+
+all_roles = sorted(df["job_title"].dropna().unique())
+def search_roles(searchterm):
+    if not searchterm:
+        return all_roles[:10]  
+
+    return [
+        role for role in all_roles
+        if searchterm.lower() in role.lower()
+    ][:10]
+
+selected_role = st_searchbox(
+    search_roles,
+    placeholder="Search job role (e.g. Data Analyst)"
+)
+
+query_job = """
+    SELECT *
+    FROM jobs
+    WHERE job_title = ?
+"""
+
+if selected_role:
+    skill_df = pd.read_sql(query_job, conn, params=[selected_role])
+    skills_name= (skill_df['skills'].dropna().str.split(',').explode().str.strip())
+    top_skills = skills_name.value_counts().head(10)
+
+    st.subheader(f"Top Skills for {selected_role}")
+    col1,col2 =st.columns(2)
+    col1.bar_chart(top_skills)
+
+    col2.dataframe(
+        top_skills.reset_index().rename(
+            columns={"index": "Skill", 0: "Count"}
+        )
+    )
 
 #KPI
 st.subheader("📊 Dashboard Overview")
@@ -173,6 +231,8 @@ with st.container():
     st.bar_chart(salary_df, x="company", y="avg_salary")
 
 st.divider()
+
+
 
 with st.container():
     st.markdown("## 📋 Data Explorer")
