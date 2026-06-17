@@ -70,7 +70,7 @@ for _, row in df.iterrows():
 conn.commit()
 conn.close()
 
-print("✅ Data loaded successfully into SQL Server!")
+print(" Data loaded successfully ")
 
 
 
