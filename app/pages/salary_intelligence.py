@@ -10,7 +10,6 @@ conn = get_connection()
 
 with st.container():
     
-    
     # Top 10 highest paying companies 
     col1,col2=st.columns(2)
     query_salary = """

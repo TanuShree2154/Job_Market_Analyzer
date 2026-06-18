@@ -75,16 +75,15 @@ if df.empty:
 st.sidebar.divider()
 
 #Sidebar Summary
-st.sidebar.markdown("---")
 st.sidebar.subheader("Dashboard Summary")
 st.sidebar.write(f"Total Jobs: {len(df)}")
 st.sidebar.write(f"Total Companies: {df['company'].nunique()}")
 st.sidebar.write(f"Total Location: {df['location'].nunique()}")
 
-#KPI
-st.subheader("📊 Dashboard Overview")
+
 st.divider()
 
+#KPI
 col1,col2,col3,col4 = st.columns(4)
 # KPI (total_jobs) 
 col1.metric(label="Total Jobs" , value=len(df))
