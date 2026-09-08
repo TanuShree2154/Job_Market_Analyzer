@@ -1,3 +1,3 @@
 USE JobMarketAnalyzer;
 -- total jobs
-select count(*) as total_jobs from jobs;
+SELECT COUNT(DISTINCT location) AS total FROM jobs;

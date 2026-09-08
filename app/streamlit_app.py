@@ -1,11 +1,52 @@
 import streamlit as st
+import pandas as pd
+from db import get_connection
+
+conn = get_connection()
 
 st.set_page_config(
     page_title='Job Market Analyzer',
     layout="wide")
 
 st.title("JOB MARKET ANALYZER")
+
+st.markdown("""
+Analyze hiring trends, salary insights, and in-demand technical skills
+using job market data.
+
+""")
+st.divider()
 st.markdown("### Dashboard Overview")
+
+
+
+
+total_jobs = pd.read_sql(
+    "SELECT COUNT(*) AS total FROM jobs",
+    conn
+).iloc[0]["total"]
+
+total_companies = pd.read_sql(
+    "SELECT COUNT(DISTINCT company) AS total FROM jobs",
+    conn
+).iloc[0]["total"]
+
+total_locations = pd.read_sql(
+    "SELECT COUNT(DISTINCT location) AS total FROM jobs",
+    conn
+).iloc[0]["total"]
+
+avg_salary = pd.read_sql(
+    "SELECT ROUND(AVG(salary_lpa),1) AS avg_salary FROM jobs",
+    conn
+).iloc[0]["avg_salary"]
+
+col1, col2, col3, col4 = st.columns(4)
+
+col1.metric("📄 Total Jobs", total_jobs)
+col2.metric("🏢 Companies", total_companies)
+col3.metric("📍 Locations", total_locations)
+col4.metric("💰 Avg Salary", f"{avg_salary} LPA")
 
 st.write("") 
 
