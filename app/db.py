@@ -1,9 +1,7 @@
-import pyodbc
+from pathlib import Path
+import sqlite3
+
+DB_PATH = Path(__file__).resolve().parent.parent / "jobs.db"
 
 def get_connection():
-    return pyodbc.connect(
-        "Driver={ODBC Driver 17 for SQL Server};"
-        r"Server=localhost\SQLEXPRESS;"
-        "Database=JobMarketAnalyzer;"
-        "Trusted_Connection=yes;"
-    )
+    return sqlite3.connect(DB_PATH)
