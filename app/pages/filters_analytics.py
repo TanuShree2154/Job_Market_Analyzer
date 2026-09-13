@@ -59,7 +59,7 @@ st.sidebar.subheader("Search")
 if "reset_counter" not in st.session_state:
     st.session_state.reset_counter = 0
 
-if st.sidebar.button("🔄 Reset Filters"):
+if st.sidebar.button("Reset Filters"):
     st.session_state.reset_counter += 1
     st.rerun()
 
@@ -223,7 +223,7 @@ st.divider()
 
 #graphs
 with st.container():
-    st.markdown("### 📈 Analytics")
+    st.markdown("### Analytics")
 col1 ,col2 =st.columns(2)
 #top company
 with col1:
@@ -261,7 +261,7 @@ with col4:
 st.divider()
 
 with st.container():
-    st.markdown("## 📋 Data Explorer")
+    st.markdown("## Data Explorer")
 
     st.write(f"Showing {len(df)} jobs")
     st.dataframe(df)
@@ -270,7 +270,7 @@ with st.container():
 
     csv = df.to_csv(index=False).encode("utf-8")
     st.download_button(
-    label="📥 Download Filtered Data (CSV)",
+    label="Download Filtered Data (CSV)",
     data=csv,
     file_name=f"filtered_jobs_{today}.csv",
     mime="text/csv"

@@ -43,17 +43,17 @@ avg_salary = pd.read_sql(
 
 col1, col2, col3, col4 = st.columns(4)
 
-col1.metric("📄 Total Jobs", total_jobs)
-col2.metric("🏢 Companies", total_companies)
-col3.metric("📍 Locations", total_locations)
-col4.metric("💰 Avg Salary", f"{avg_salary} LPA")
+col1.metric("Total Jobs", total_jobs)
+col2.metric("Companies", total_companies)
+col3.metric("Locations", total_locations)
+col4.metric("Avg Salary", f"{avg_salary} LPA")
 
 st.write("") 
 
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    st.markdown("## 🧠 Skills Intelligence")
+    st.markdown("## Skills Intelligence")
 
     st.markdown("""
     **Analyze demand patterns in technical skills.**  
@@ -65,7 +65,7 @@ with col1:
         st.switch_page("pages/skills.py")  # adjust file name
 
 with col2:
-    st.markdown("## 📊 Market Analytics")
+    st.markdown("## Market Analytics")
 
     st.markdown("""
     **Understand hiring trends across companies and locations.**  
@@ -85,7 +85,7 @@ with col3:
     **Compare salaries across roles, skills, and companies.**  
     """)
 
-    st.warning("📈 Avg Salary: 12.4 LPA")
+    st.warning("Avg Salary: 12.4 LPA")
 
     if st.button("Open Salary", use_container_width=True):
         st.switch_page("pages/salary_intelligence.py")
